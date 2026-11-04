@@ -1,0 +1,63 @@
+# Repository-to-website operating model
+
+The repository and flypython.com should form one user journey without becoming
+duplicate websites.
+
+## Value split
+
+| Layer | User value | Owns |
+| --- | --- | --- |
+| GitHub repository | Inspect, run, verify, reuse, and contribute | Source guides, playbooks, examples, templates, catalog records, tests, and manifests |
+| flypython.com | Discover the right path and continue learning | Presentation, search, navigation, newsletter, progress, and live offers |
+
+The website consumes a pinned repository commit. A website-only editorial copy
+must not become a second source of truth.
+
+## Funnel
+
+1. A visitor lands on a README, guide, example, or search result.
+2. The visitor completes a small useful outcome in the repository.
+3. One contextual call to action offers the next step on flypython.com.
+4. The website may invite an email subscription after delivering useful
+   content, not before.
+5. A paid offer may appear only when its scope, price, delivery, support, and
+   refund behavior are live and verifiable.
+
+Good calls to action continue the current task: a guided learning path after a
+guide, related tools after an example, or reviewed updates after Project Radar.
+Avoid generic banners, repeated marketing copy, and links to placeholder pages.
+
+## Attribution and acceptance
+
+The dedicated `/from-github` landing route is now in production. Repository
+calls to action may link to that route when attribution matters, while generic
+“continue learning” links may still use the site root. The English README's
+“continue on flypython.com” calls to action link `/from-github`; the Chinese
+README keeps the site root until that route has a Chinese version, so Chinese
+readers do not land on an English-only page. Badges and navigation links stay
+on the site root. Re-verify the custom domain after each website release.
+Measure, at minimum:
+
+- repository link clicks by source document;
+- landing-page engagement with a learning path;
+- newsletter opt-ins attributed to the repository;
+- requests for a clearly defined service or product;
+- confirmed payments and completed delivery, kept separate from registrations
+  or pricing-page views.
+
+Do not treat stars, traffic, email signups, a checkout route, or a deploy log as
+paid-demand evidence. Review the funnel monthly and remove calls to action that
+do not help visitors take a useful next step.
+
+## Repository release status
+
+The package version is `0.1.2`. The immutable `v0.1.2` tag is cut on the
+`master` commit that merges the 0.1.2 release change, and its GitHub Release
+names that SHA; the previous `v0.1.1` tag points to `db85cdd`. 0.1.2 adds
+learner verifier v2 (tests must pass and reflection checkpoints must be
+explicitly confirmed with `--attest`), CI and course-setup fixes, and a
+corrected `llms.txt`; see the repository CHANGELOG. FlyPython.com builds
+from an exact commit pinned on the website side, so `master` can be ahead of
+what the site serves. A pinned, served commit proves release delivery, not
+learner outcomes or paid demand; the website's payment and email operations
+still have separate acceptance gates.

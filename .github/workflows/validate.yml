@@ -1,0 +1,51 @@
+name: Validate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  # Preserve a complete default-branch validation; superseded PR runs can stop.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  # Lowest and latest supported CPython; the universal lock already resolves
+  # every version between them, so the middle ones ran the identical suite.
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.14"]
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.19"
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install locked dev dependencies
+        run: |
+          uv venv --python ${{ matrix.python-version }}
+          uv pip install -r requirements-dev.lock.txt
+
+      - name: Run all checks
+        run: make check PYTHON=.venv/bin/python
+
+      - name: Lock files match pyproject.toml
+        if: matrix.python-version == '3.11'
+        run: make lock-check
